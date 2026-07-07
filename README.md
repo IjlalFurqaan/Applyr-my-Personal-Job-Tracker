@@ -1,11 +1,11 @@
-# jobtrack
+# Applyr � My Personal Job Tracker
 
 A local-first, single-user job-application tracker that maintains itself.
 
 Two bets, against every tracker that rots after two weeks:
 
 1. **Capture by saying things.** Natural language in, structured records out —
-   `jobtrack say "I heard back from Stripe, phone screen Friday"`. It also reads
+   `applyr say "I heard back from Stripe, phone screen Friday"`. It also reads
    your email (read-only) and proposes updates, so the tracker keeps itself current.
 2. **Tell you what's working.** Not a pretty kanban board — funnel conversion,
    response rate by résumé version, by source, and by how fast you applied.
@@ -40,25 +40,25 @@ appending, not editing.
   ollama pull qwen3:8b
   ollama pull nomic-embed-text
   ```
-  (Defaults; change them in `~/.jobtrack/config.toml`.)
+  (Defaults; change them in `~/.applyr/config.toml`.)
 
 ## Install
 
 ```bash
 uv sync
-uv run jobtrack init        # creates ~/.jobtrack/{jobtrack.db,config.toml,snapshots,prep}
+uv run applyr init        # creates ~/.applyr/{applyr.db,config.toml,snapshots,prep}
 ```
 
-`JOBTRACK_HOME` overrides the data directory (used by the tests).
+`APPLYR_HOME` overrides the data directory (used by the tests).
 
 ## Everyday use
 
 ### Capture (natural language)
 
 ```bash
-uv run jobtrack say "Applied to the Stripe backend role with resume-v3, found it on LinkedIn"
-uv run jobtrack say "Recruiter from Datadog reached out about a platform role"
-uv run jobtrack say "Phone screen with Stripe went well, they're advancing me"
+uv run applyr say "Applied to the Stripe backend role with resume-v3, found it on LinkedIn"
+uv run applyr say "Recruiter from Datadog reached out about a platform role"
+uv run applyr say "Phone screen with Stripe went well, they're advancing me"
 ```
 
 `say` picks one tool and fills its arguments; everything after that — resolving
@@ -70,17 +70,17 @@ you to choose; they are never guessed.
 
 ```bash
 # Register the exact résumé you send, pinned by content hash
-uv run jobtrack add doc ./resumes/backend-v3.pdf --label resume-v3-backend
+uv run applyr add doc ./resumes/backend-v3.pdf --label resume-v3-backend
 
 # Capture a job — the JD is archived immutably at capture time
-uv run jobtrack add job --company Stripe --title "Backend Engineer" \
+uv run applyr add job --company Stripe --title "Backend Engineer" \
     --jd-file ./stripe-jd.txt --source linkedin --posted 2026-07-01
 #   or: --jd-url https://…   (a single plain GET; paste the text if it's bot-walled)
 
-uv run jobtrack apply "stripe backend" --resume resume-v3-backend --source referral
-uv run jobtrack status "stripe backend" screening --date 2026-07-08
-uv run jobtrack note "stripe backend" "Recruiter mentioned a take-home next"
-uv run jobtrack add contact "Jana Müller" --company Stripe --relationship recruiter
+uv run applyr apply "stripe backend" --resume resume-v3-backend --source referral
+uv run applyr status "stripe backend" screening --date 2026-07-08
+uv run applyr note "stripe backend" "Recruiter mentioned a take-home next"
+uv run applyr add contact "Jana Müller" --company Stripe --relationship recruiter
 ```
 
 References accept an explicit id (`app#3`, `job#7`, `co#1`) or free text
@@ -89,11 +89,11 @@ References accept an explicit id (`app#3`, `job#7`, `co#1`) or free text
 ### See what's going on
 
 ```bash
-uv run jobtrack list [--status screening] [--stale] [--ghosted]
-uv run jobtrack show app#3          # timeline, interviews, pinned résumé, notes, emails
-uv run jobtrack events app#3        # raw event log
-uv run jobtrack search "kubernetes" # fuzzy + semantic (after `reindex`)
-uv run jobtrack brief               # interviews ≤48h, tasks due, stale apps, pending proposals
+uv run applyr list [--status screening] [--stale] [--ghosted]
+uv run applyr show app#3          # timeline, interviews, pinned résumé, notes, emails
+uv run applyr events app#3        # raw event log
+uv run applyr search "kubernetes" # fuzzy + semantic (after `reindex`)
+uv run applyr brief               # interviews ≤48h, tasks due, stale apps, pending proposals
 ```
 
 `ghosted` and `stale` aren't statuses — they're derived from days-since-activity
@@ -102,9 +102,9 @@ against the per-stage SLAs in `config.toml`.
 ### Email ingestion (the anti-rot feature)
 
 ```bash
-uv run jobtrack email setup     # stores IMAP creds in the OS keyring (Gmail: app password)
-uv run jobtrack email poll      # read-only fetch → local classify → queued proposals
-uv run jobtrack review          # approve/reject the queue: y / n / s / a(ll) / q
+uv run applyr email setup     # stores IMAP creds in the OS keyring (Gmail: app password)
+uv run applyr email poll      # read-only fetch → local classify → queued proposals
+uv run applyr review          # approve/reject the queue: y / n / s / a(ll) / q
 ```
 
 `poll` never marks read, moves, deletes, or sends. Each email is classified locally
@@ -116,10 +116,10 @@ Nothing auto-commits.
 ### Insights
 
 ```bash
-uv run jobtrack stats            # funnel + response rates (resume / source / timing)
-uv run jobtrack stats timing     # just posted→applied buckets
-uv run jobtrack skills --extract # extract skills from JDs, then map gaps vs your résumé
-uv run jobtrack questions        # your interview question bank, built from debriefs
+uv run applyr stats            # funnel + response rates (resume / source / timing)
+uv run applyr stats timing     # just posted→applied buckets
+uv run applyr skills --extract # extract skills from JDs, then map gaps vs your résumé
+uv run applyr questions        # your interview question bank, built from debriefs
 ```
 
 - **Funnel**: of applications that reached stage *i*, the fraction that reached any
@@ -133,14 +133,14 @@ uv run jobtrack questions        # your interview question bank, built from debr
 ### Interview prep & debrief
 
 ```bash
-uv run jobtrack prep app#3       # one-page dossier: JD + résumé sent + notes + past debriefs
-uv run jobtrack debrief app#3    # record how it went + the questions asked (feeds `questions`)
+uv run applyr prep app#3       # one-page dossier: JD + résumé sent + notes + past debriefs
+uv run applyr debrief app#3    # record how it went + the questions asked (feeds `questions`)
 ```
 
 ### Drive it from Claude (MCP)
 
 ```bash
-uv run jobtrack mcp              # stdio MCP server
+uv run applyr mcp              # stdio MCP server
 ```
 
 Register with Claude Desktop / Claude Code (adjust the path):
@@ -148,8 +148,8 @@ Register with Claude Desktop / Claude Code (adjust the path):
 ```json
 {
   "mcpServers": {
-    "jobtrack": { "command": "uv", "args": ["run", "jobtrack", "mcp"],
-                  "cwd": "C:/Projects/jobtrack" }
+    "applyr": { "command": "uv", "args": ["run", "applyr", "mcp"],
+                  "cwd": "C:/Projects/applyr" }
   }
 }
 ```
@@ -160,7 +160,7 @@ becomes a `confirm_proposal` call. Same pipeline, different surface.
 
 ## Configuration
 
-`~/.jobtrack/config.toml` (created by `init`, fully local by default). Notable knobs:
+`~/.applyr/config.toml` (created by `init`, fully local by default). Notable knobs:
 
 - `[llm] chat_model / embed_model` — Ollama model names.
 - `[llm.tasks]` — route individual tasks (`classify`, `jd_parse`, `prep`, `draft`,
@@ -193,9 +193,9 @@ uv run ruff check .
 uv run mypy            # --strict, configured in pyproject.toml
 ```
 
-Migrations are managed with Alembic (`src/jobtrack/migrations/`) and applied
+Migrations are managed with Alembic (`src/applyr/migrations/`) and applied
 automatically on startup. The semantic index (sqlite-vec) is rebuilt on demand
-with `jobtrack reindex`; if sqlite-vec or Ollama isn't available, fuzzy search
+with `applyr reindex`; if sqlite-vec or Ollama isn't available, fuzzy search
 still works and semantic search tells you why it's skipped.
 
 ## Non-goals
