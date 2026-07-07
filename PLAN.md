@@ -1,4 +1,4 @@
-# jobtrack — Phase 0 Plan
+# applyr — Phase 0 Plan
 
 Single-user, local-first job-application tracker. Natural-language capture, email-driven
 self-maintenance, event-sourced pipeline, analytics that say what's working.
@@ -11,14 +11,14 @@ Target machine: Windows 11, Python 3.12+, `uv`, Ollama local. No WSL, no Docker.
 ## 1. Repository layout
 
 ```
-jobtrack/
+applyr/
 ├── pyproject.toml               # uv-managed; ruff + mypy(strict) + pytest config here
 ├── alembic.ini
 ├── migrations/                  # Alembic, from day one (render_as_batch=True for SQLite)
 │   └── versions/
-├── src/jobtrack/
+├── src/applyr/
 │   ├── __init__.py
-│   ├── config.py                # ~/.jobtrack/config.toml loader, paths, SLA defaults
+│   ├── config.py                # ~/.applyr/config.toml loader, paths, SLA defaults
 │   ├── core/                    # knows nothing about LLMs or MCP
 │   │   ├── enums.py             # Status, EventType, EmailClass, ProposalStatus, ...
 │   │   ├── models.py            # SQLModel tables (schema in §3)
@@ -57,7 +57,7 @@ jobtrack/
 
 Key decision: **`llm/tools.py` is the one place tool schemas live.** The MCP server exposes
 them to Claude Code; the Ollama provider passes the same schemas for local tool-calling
-(`jobtrack say "..."`). Two front doors, one contract, one test suite.
+(`applyr say "..."`). Two front doors, one contract, one test suite.
 
 Dependencies (runtime): `sqlmodel`, `alembic`, `pydantic>=2`, `fastmcp`, `typer`, `rich`,
 `httpx`, `sqlite-vec`, `rapidfuzz`, `keyring`, `imap-tools`, `markdownify`, `pypdf`
@@ -113,7 +113,7 @@ Two semantic clarifications I'll implement unless you object:
   of a special case. (Alternative — applications only exist once applied — loses that.)
 
 JD snapshots: `jd_snapshot_path` stores the raw fetched HTML/text under
-`~/.jobtrack/snapshots/<jd_hash>.html` (provenance); `jd_markdown` is the cleaned markdown
+`~/.applyr/snapshots/<jd_hash>.html` (provenance); `jd_markdown` is the cleaned markdown
 in the DB (what prep and embeddings use); `jd_hash` = sha256 of `jd_markdown`. Immutable
 after capture — re-capturing an updated posting creates a new job version note, never an
 overwrite.
@@ -302,7 +302,7 @@ show(ref: str)          # full detail for any entity: application → job, compa
                         # timeline, interviews, pinned docs, linked emails, tasks
 
 get_briefing()          # {interviews_next_48h, followups_due, stale_past_sla,
-                        #  pending_proposals} — the `jobtrack brief` screen as data
+                        #  pending_proposals} — the `applyr brief` screen as data
 
 draft_followup(
     application_ref: str,
@@ -383,7 +383,7 @@ config — the default config ships fully local.
 **Embeddings & search**: one sqlite-vec virtual table `vec_items(embedding, item_type,
 item_id, chunk_ix)` covering JD markdown, notes, and debriefs (email bodies added in
 Phase 3). Default embedding model `nomic-embed-text` (768-dim) — open question below.
-Model name + dim recorded in `meta`; on mismatch, refuse to search and offer `jobtrack
+Model name + dim recorded in `meta`; on mismatch, refuse to search and offer `applyr
 reindex`. Search = SQL exact/fuzzy UNION vector KNN, merged with a simple score.
 
 **JD capture**: paste is primary. URL mode = single plain `httpx` GET with a desktop UA;
@@ -392,12 +392,12 @@ a bot-wall, say so and ask for a paste — no retries, no headless browser (anti
 
 **Email ingestion (Phase 3)**: read-only IMAP via `imap-tools`; per-folder UID checkpoint
 in `meta`; never marks read, never moves, never deletes, never sends. Credentials in
-Windows Credential Manager via `keyring` (`jobtrack email setup` prompts once). Your
+Windows Credential Manager via `keyring` (`applyr email setup` prompts once). Your
 address is Gmail, so: IMAP + app password, folder default `INBOX`. Classifier runs
 locally, always. Linking: sender domain → `companies.domain`/aliases → application; then
 `In-Reply-To`/`References` thread matching against previously linked emails; then subject
 heuristics. Classifications ≥ confidence threshold become pending `update_status` /
-`log_interaction` proposals (source=`email`) in `jobtrack review`; below threshold they
+`log_interaction` proposals (source=`email`) in `applyr review`; below threshold they
 sit unlinked and are shown in review too. **Nothing auto-commits, ever** — batch-approve
 is one keystroke per proposal or `a` for approve-all-high-confidence.
 
@@ -412,12 +412,12 @@ is one keystroke per proposal or `a` for approve-all-high-confidence.
   N% of targeted JDs and is not evidenced in the active resume's extracted text."
   Framed as evidence, not an ATS score.
 
-**CLI surface (Phase 1)**: `jobtrack add company|job|contact|doc`, `jobtrack apply`,
-`jobtrack status <ref> <to_status>`, `jobtrack list [--status --stale --ghosted]`,
-`jobtrack show <ref>`, `jobtrack events <ref>`. Phase 2 adds `jobtrack say "..."` (NL →
-local LLM → proposal) and `jobtrack mcp` (serve). Phase 3 adds `jobtrack email
-setup|poll|review`. Phase 4 adds `jobtrack brief`, `jobtrack stats`, `jobtrack skills`.
-Phase 5 adds `jobtrack prep <ref>`, `jobtrack debrief <ref>`.
+**CLI surface (Phase 1)**: `applyr add company|job|contact|doc`, `applyr apply`,
+`applyr status <ref> <to_status>`, `applyr list [--status --stale --ghosted]`,
+`applyr show <ref>`, `applyr events <ref>`. Phase 2 adds `applyr say "..."` (NL →
+local LLM → proposal) and `applyr mcp` (serve). Phase 3 adds `applyr email
+setup|poll|review`. Phase 4 adds `applyr brief`, `applyr stats`, `applyr skills`.
+Phase 5 adds `applyr prep <ref>`, `applyr debrief <ref>`.
 
 ---
 
