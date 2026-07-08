@@ -4,8 +4,8 @@ from dataclasses import dataclass
 
 from sqlalchemy.engine import Engine
 
-from jobtrack.config import Config, ensure_home, load_config
-from jobtrack.core.db import init_db
+from applyr.config import Config, ensure_home, load_config
+from applyr.core.db import init_db
 
 
 @dataclass
