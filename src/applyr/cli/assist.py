@@ -4,16 +4,16 @@ from __future__ import annotations
 
 import typer
 
-from jobtrack.cli.context import get_state
-from jobtrack.cli.render import console, dispatch_interactive
-from jobtrack.core.clock import utcnow
-from jobtrack.core.db import session_scope, vec_available
-from jobtrack.core.models import Interview
-from jobtrack.core.prep import PrepError, build_dossier
-from jobtrack.llm import resolution as res
-from jobtrack.llm.provider import ChatMessage, ProviderError
-from jobtrack.llm.router import local_provider, provider_for
-from jobtrack.llm.tools import ToolContext, dispatch
+from applyr.cli.context import get_state
+from applyr.cli.render import console, dispatch_interactive
+from applyr.core.clock import utcnow
+from applyr.core.db import session_scope, vec_available
+from applyr.core.models import Interview
+from applyr.core.prep import PrepError, build_dossier
+from applyr.llm import resolution as res
+from applyr.llm.provider import ChatMessage, ProviderError
+from applyr.llm.router import local_provider, provider_for
+from applyr.llm.tools import ToolContext, dispatch
 
 
 def say(
@@ -22,7 +22,7 @@ def say(
 ) -> None:
     """Natural-language capture through the local LLM (always confirms writes)."""
     state = get_state()
-    from jobtrack.llm.say import plan
+    from applyr.llm.say import plan
 
     with session_scope(state.engine) as session:
         ctx = ToolContext(
@@ -51,7 +51,7 @@ def say(
 
 def mcp_serve() -> None:
     """Run the MCP server (stdio) for Claude Code / Claude Desktop."""
-    from jobtrack.mcp.server import serve
+    from applyr.mcp.server import serve
 
     serve()
 
@@ -176,7 +176,7 @@ def draft(
             console.print(f"[red]{result.message}[/red]")
             raise typer.Exit(1)
         if result.result == "needs_disambiguation":
-            from jobtrack.cli.render import print_candidates
+            from applyr.cli.render import print_candidates
 
             print_candidates(result)
             raise typer.Exit(1)
@@ -193,7 +193,7 @@ def reindex_cmd() -> None:
             "Fuzzy search still works.[/red]"
         )
         raise typer.Exit(1)
-    from jobtrack.core.search import reindex
+    from applyr.core.search import reindex
 
     with session_scope(state.engine) as session:
         provider = local_provider(state.config)
