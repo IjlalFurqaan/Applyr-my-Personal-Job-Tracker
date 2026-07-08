@@ -6,13 +6,13 @@ import re
 
 import typer
 
-from jobtrack.cli.context import get_state
-from jobtrack.cli.render import console
-from jobtrack.core.db import session_scope
-from jobtrack.ingest import imap_poller
-from jobtrack.ingest.linker import process_new
-from jobtrack.llm.provider import ProviderError
-from jobtrack.llm.router import provider_for
+from applyr.cli.context import get_state
+from applyr.cli.render import console
+from applyr.core.db import session_scope
+from applyr.ingest import imap_poller
+from applyr.ingest.linker import process_new
+from applyr.llm.provider import ProviderError
+from applyr.llm.router import provider_for
 
 email_app = typer.Typer(no_args_is_help=True, help="Read-only email ingestion.")
 
@@ -59,7 +59,7 @@ def setup(
         )
     if host:
         console.print(f"[yellow]also set `host = \"{host}\"` under [email][/yellow]")
-    console.print("[dim]jobtrack only ever reads mail — it never sends, marks or deletes.[/dim]")
+    console.print("[dim]applyr only ever reads mail — it never sends, marks or deletes.[/dim]")
 
 
 @email_app.command()
@@ -84,12 +84,12 @@ def poll() -> None:
         except ProviderError as exc:
             console.print(
                 f"[yellow]stored, but classification skipped: {exc} — "
-                "run `jobtrack email poll` again once Ollama is up[/yellow]"
+                "run `applyr email poll` again once Ollama is up[/yellow]"
             )
             return
         if created:
             console.print(
-                f"[bold]{len(created)} proposal(s) queued[/bold] — run `jobtrack review`"
+                f"[bold]{len(created)} proposal(s) queued[/bold] — run `applyr review`"
             )
         else:
             console.print("[dim]no actionable job mail this time[/dim]")
