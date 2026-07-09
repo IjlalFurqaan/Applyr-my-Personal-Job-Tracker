@@ -6,12 +6,12 @@ import typer
 from rich.panel import Panel
 from rich.table import Table
 
-from jobtrack.cli.context import get_state
-from jobtrack.cli.render import console
-from jobtrack.core import analytics
-from jobtrack.core.clock import to_local
-from jobtrack.core.db import session_scope
-from jobtrack.core.prep import question_bank
+from applyr.cli.context import get_state
+from applyr.cli.render import console
+from applyr.core import analytics
+from applyr.core.clock import to_local
+from applyr.core.db import session_scope
+from applyr.core.prep import question_bank
 
 
 def brief() -> None:
@@ -53,7 +53,7 @@ def brief() -> None:
             ]
             console.print(
                 Panel(
-                    "\n".join(lines) + "\n[dim]run `jobtrack review`[/dim]",
+                    "\n".join(lines) + "\n[dim]run `applyr review`[/dim]",
                     title=f"{len(data.pending_proposals)} pending proposal(s)",
                 )
             )
@@ -121,9 +121,9 @@ def skills(
     state = get_state()
     with session_scope(state.engine) as session:
         if extract:
-            from jobtrack.llm.provider import ProviderError
-            from jobtrack.llm.router import provider_for
-            from jobtrack.llm.skills import extract_missing
+            from applyr.llm.provider import ProviderError
+            from applyr.llm.router import provider_for
+            from applyr.llm.skills import extract_missing
 
             try:
                 jobs_done, added = extract_missing(session, provider_for(state.config, "jd_parse"))
@@ -134,7 +134,7 @@ def skills(
         gap, resume_label, jobs_covered = analytics.skill_gap(session)
         if not gap:
             console.print(
-                "[dim]no skills extracted yet — run `jobtrack skills --extract` "
+                "[dim]no skills extracted yet — run `applyr skills --extract` "
                 "after capturing JDs[/dim]"
             )
             return
