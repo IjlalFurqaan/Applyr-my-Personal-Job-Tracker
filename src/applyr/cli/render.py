@@ -11,10 +11,10 @@ from rich.panel import Panel
 from rich.table import Table
 from sqlmodel import Session
 
-from jobtrack.cli.context import AppState
-from jobtrack.core import proposals as props
-from jobtrack.core.proposals import CommitError, ProposalError
-from jobtrack.llm.tools import ToolContext, ToolResult, dispatch
+from applyr.cli.context import AppState
+from applyr.core import proposals as props
+from applyr.core.proposals import CommitError, ProposalError
+from applyr.llm.tools import ToolContext, ToolResult, dispatch
 
 console = Console()
 
