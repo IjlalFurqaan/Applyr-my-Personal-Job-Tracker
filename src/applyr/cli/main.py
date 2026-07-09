@@ -7,22 +7,22 @@ import typer
 from rich.panel import Panel
 from rich.table import Table
 
-from jobtrack.cli import assist, emailcmd, insights
-from jobtrack.cli.context import get_state
-from jobtrack.cli.render import console, dispatch_interactive, print_ok
-from jobtrack.core import proposals as props
-from jobtrack.core.actions import AddCompany, NewCompany
-from jobtrack.core.clock import to_local
-from jobtrack.core.db import session_scope
-from jobtrack.core.enums import DocumentType, Status
-from jobtrack.core.events import days_in_stage, derived_status
-from jobtrack.core.models import ApplicationEvent
-from jobtrack.core.proposals import CommitError, ProposalError
-from jobtrack.core.repos import applications as apps_repo
-from jobtrack.core.repos import documents as documents_repo
-from jobtrack.core.sla import days_since_activity, is_ghosted, is_stale
-from jobtrack.llm import resolution as res
-from jobtrack.llm.tools import ToolContext, dispatch
+from applyr.cli import assist, emailcmd, insights
+from applyr.cli.context import get_state
+from applyr.cli.render import console, dispatch_interactive, print_ok
+from applyr.core import proposals as props
+from applyr.core.actions import AddCompany, NewCompany
+from applyr.core.clock import to_local
+from applyr.core.db import session_scope
+from applyr.core.enums import DocumentType, Status
+from applyr.core.events import days_in_stage, derived_status
+from applyr.core.models import ApplicationEvent
+from applyr.core.proposals import CommitError, ProposalError
+from applyr.core.repos import applications as apps_repo
+from applyr.core.repos import documents as documents_repo
+from applyr.core.sla import days_since_activity, is_ghosted, is_stale
+from applyr.llm import resolution as res
+from applyr.llm.tools import ToolContext, dispatch
 
 app = typer.Typer(no_args_is_help=True, help="Local-first job application tracker.")
 add_app = typer.Typer(no_args_is_help=True, help="Add companies, jobs, contacts, docs, tasks.")
@@ -43,7 +43,7 @@ app.command("draft")(assist.draft)
 
 @app.command()
 def init() -> None:
-    """Create ~/.jobtrack, the database, and a default config."""
+    """Create ~/.applyr, the database, and a default config."""
     state = get_state()
     console.print(f"database: {state.config.db_path}")
     console.print(f"config:   {state.config.home / 'config.toml'}")
@@ -68,8 +68,8 @@ def add_company(
                 name=name, domain=domain, industry=industry, size=size, hq=hq, notes=notes
             )
         )
-        from jobtrack.cli.render import confirm_flow
-        from jobtrack.llm.tools import ProposalView, ToolResult
+        from applyr.cli.render import confirm_flow
+        from applyr.llm.tools import ProposalView, ToolResult
 
         proposal = props.propose(session, action, source="cli")
         assert proposal.id is not None
@@ -289,7 +289,7 @@ def list_cmd(
         if include_archived:
             from sqlmodel import select
 
-            from jobtrack.core.models import Application
+            from applyr.core.models import Application
 
             apps = list(session.exec(select(Application)).all())
         table = Table(show_header=True, header_style="bold")
@@ -342,7 +342,7 @@ def show(ref: str) -> None:
             console.print(f"[red]{result.message}[/red]")
             raise typer.Exit(1)
         if result.result == "needs_disambiguation":
-            from jobtrack.cli.render import print_candidates
+            from applyr.cli.render import print_candidates
 
             print_candidates(result)
             raise typer.Exit(1)
