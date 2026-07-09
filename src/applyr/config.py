@@ -1,4 +1,4 @@
-"""Configuration: ~/.jobtrack/config.toml with defaults, overridable via JOBTRACK_HOME."""
+"""Configuration: ~/.applyr/config.toml with defaults, overridable via APPLYR_HOME."""
 
 from __future__ import annotations
 
@@ -26,7 +26,7 @@ DEFAULT_TASKS: dict[str, str] = {
 }
 
 DEFAULT_CONFIG_TOML = """\
-# jobtrack configuration. Everything runs locally by default.
+# applyr configuration. Everything runs locally by default.
 
 [llm]
 provider = "ollama"
@@ -68,8 +68,8 @@ auto = ["add_note", "log_interaction"]
 """
 
 
-def jobtrack_home() -> Path:
-    return Path(os.environ.get("JOBTRACK_HOME", str(Path.home() / ".jobtrack")))
+def applyr_home() -> Path:
+    return Path(os.environ.get("APPLYR_HOME", str(Path.home() / ".applyr")))
 
 
 @dataclass
@@ -100,7 +100,7 @@ class Config:
 
     @property
     def db_path(self) -> Path:
-        return self.home / "jobtrack.db"
+        return self.home / "applyr.db"
 
     @property
     def snapshots_dir(self) -> Path:
@@ -112,7 +112,7 @@ class Config:
 
 
 def load_config() -> Config:
-    home = jobtrack_home()
+    home = applyr_home()
     path = home / "config.toml"
     data: dict[str, Any] = {}
     if path.exists():
