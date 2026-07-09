@@ -13,8 +13,8 @@ from typing import Annotated, Literal
 
 from pydantic import BaseModel, Field, TypeAdapter, field_validator, model_validator
 
-from jobtrack.core.clock import utcnow
-from jobtrack.core.enums import (
+from applyr.core.clock import utcnow
+from applyr.core.enums import (
     Direction,
     DocumentType,
     InteractionChannel,
