@@ -4,11 +4,11 @@ from __future__ import annotations
 
 from sqlmodel import Session
 
-from jobtrack.core import actions as act
-from jobtrack.core.enums import STATUS_ORDER, TERMINAL_STATUSES
-from jobtrack.core.events import days_in_stage, derived_status
-from jobtrack.core.models import Application, Company, Contact, Interview
-from jobtrack.core.repos import applications as apps_repo
+from applyr.core import actions as act
+from applyr.core.enums import STATUS_ORDER, TERMINAL_STATUSES
+from applyr.core.events import days_in_stage, derived_status
+from applyr.core.models import Application, Company, Contact, Interview
+from applyr.core.repos import applications as apps_repo
 
 
 def _company_line(session: Session, company_id: int | None, new: act.NewCompany | None) -> str:
