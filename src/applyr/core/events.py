@@ -16,9 +16,9 @@ from typing import Any
 
 from sqlmodel import Session, col, select
 
-from jobtrack.core.clock import utcnow
-from jobtrack.core.enums import EventSource, EventType, Status
-from jobtrack.core.models import Application, ApplicationEvent, Email, Interaction
+from applyr.core.clock import utcnow
+from applyr.core.enums import EventSource, EventType, Status
+from applyr.core.models import Application, ApplicationEvent, Email, Interaction
 
 
 def status_events(session: Session, application_id: int) -> list[ApplicationEvent]:
