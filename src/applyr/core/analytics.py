@@ -17,15 +17,15 @@ import statistics
 from pydantic import BaseModel
 from sqlmodel import Session, col, select
 
-from jobtrack.core.clock import utcnow
-from jobtrack.core.enums import (
+from applyr.core.clock import utcnow
+from applyr.core.enums import (
     POSITIVE_STATUSES,
     STATUS_ORDER,
     ProposalStatus,
     Status,
 )
-from jobtrack.core.events import derived_status, status_events
-from jobtrack.core.models import (
+from applyr.core.events import derived_status, status_events
+from applyr.core.models import (
     Application,
     Document,
     Email,
@@ -36,9 +36,9 @@ from jobtrack.core.models import (
     Proposal,
     TaskItem,
 )
-from jobtrack.core.repos import applications as apps_repo
-from jobtrack.core.repos import documents as documents_repo
-from jobtrack.core.sla import days_since_activity, is_stale
+from applyr.core.repos import applications as apps_repo
+from applyr.core.repos import documents as documents_repo
+from applyr.core.sla import days_since_activity, is_stale
 
 
 class StageStat(BaseModel):
