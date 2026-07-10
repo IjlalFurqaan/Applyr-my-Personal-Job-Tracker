@@ -8,7 +8,7 @@ import datetime as dt
 
 from sqlmodel import Field, SQLModel
 
-from jobtrack.core.clock import utcnow
+from applyr.core.clock import utcnow
 
 
 class Company(SQLModel, table=True):
