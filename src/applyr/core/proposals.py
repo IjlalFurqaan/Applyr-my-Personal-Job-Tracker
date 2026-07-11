@@ -16,13 +16,13 @@ from typing import Any
 from pydantic import BaseModel
 from sqlmodel import Session, col, select
 
-from jobtrack.core import actions as act
-from jobtrack.core.actions import action_adapter
-from jobtrack.core.clock import utcnow
-from jobtrack.core.diff import render_diff
-from jobtrack.core.enums import EventSource, ProposalStatus, Status
-from jobtrack.core.events import append_note_event, append_status_event
-from jobtrack.core.models import (
+from applyr.core import actions as act
+from applyr.core.actions import action_adapter
+from applyr.core.clock import utcnow
+from applyr.core.diff import render_diff
+from applyr.core.enums import EventSource, ProposalStatus, Status
+from applyr.core.events import append_note_event, append_status_event
+from applyr.core.models import (
     Application,
     Contact,
     Interaction,
@@ -31,9 +31,9 @@ from jobtrack.core.models import (
     Proposal,
     TaskItem,
 )
-from jobtrack.core.repos import applications as apps_repo
-from jobtrack.core.repos import companies as companies_repo
-from jobtrack.core.repos import documents as documents_repo
+from applyr.core.repos import applications as apps_repo
+from applyr.core.repos import companies as companies_repo
+from applyr.core.repos import documents as documents_repo
 
 
 class ProposalError(Exception):
