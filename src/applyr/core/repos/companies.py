@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from sqlmodel import Session, col, select
 
-from jobtrack.core.actions import NewCompany
-from jobtrack.core.models import Company, CompanyAlias
-from jobtrack.core.normalize import normalize_company
+from applyr.core.actions import NewCompany
+from applyr.core.models import Company, CompanyAlias
+from applyr.core.normalize import normalize_company
 
 
 def create(session: Session, data: NewCompany) -> Company:
