@@ -12,9 +12,9 @@ import json
 
 from sqlmodel import Session, select
 
-from jobtrack.core.clock import utcnow
-from jobtrack.core.events import derived_status, notes_for
-from jobtrack.core.models import Application, Company, Contact, Document, Interview, Job
+from applyr.core.clock import utcnow
+from applyr.core.events import derived_status, notes_for
+from applyr.core.models import Application, Company, Contact, Document, Interview, Job
 
 
 class PrepError(Exception):
