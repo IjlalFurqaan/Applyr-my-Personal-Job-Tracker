@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from sqlmodel import Session, col, select
 
-from jobtrack.core.models import Application, Company, Job
+from applyr.core.models import Application, Company, Job
 
 
 def get(session: Session, application_id: int) -> Application | None:
