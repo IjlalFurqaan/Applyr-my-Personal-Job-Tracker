@@ -5,8 +5,8 @@ from pathlib import Path
 
 from sqlmodel import Session, select
 
-from jobtrack.core.enums import DocumentType
-from jobtrack.core.models import Document
+from applyr.core.enums import DocumentType
+from applyr.core.models import Document
 
 
 class DocumentError(Exception):
