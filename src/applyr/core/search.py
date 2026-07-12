@@ -1,6 +1,6 @@
 """Search: fuzzy (always available) + semantic via sqlite-vec (optional).
 
-The semantic index is rebuilt explicitly with `jobtrack reindex` — no magic
+The semantic index is rebuilt explicitly with `applyr reindex` — no magic
 background embedding. If sqlite-vec or Ollama is unavailable, fuzzy search
 still works and semantic search reports why it can't.
 """
@@ -17,9 +17,9 @@ from sqlalchemy import text as sa_text
 from sqlalchemy.engine import Engine
 from sqlmodel import Session, col, select
 
-from jobtrack.core.enums import EventType
-from jobtrack.core.events import derived_status
-from jobtrack.core.models import (
+from applyr.core.enums import EventType
+from applyr.core.events import derived_status
+from applyr.core.models import (
     ApplicationEvent,
     Company,
     CompanyAlias,
@@ -29,7 +29,7 @@ from jobtrack.core.models import (
     Job,
     Meta,
 )
-from jobtrack.core.repos import applications as apps_repo
+from applyr.core.repos import applications as apps_repo
 
 EmbedFn = Callable[[list[str]], list[list[float]]]
 
@@ -276,11 +276,11 @@ def semantic_search(
 ) -> list[SearchHit]:
     indexed_model = session.get(Meta, "embed_model")
     if indexed_model is None:
-        raise SemanticUnavailable("no semantic index yet — run `jobtrack reindex`")
+        raise SemanticUnavailable("no semantic index yet — run `applyr reindex`")
     if indexed_model.value != expected_model:
         raise SemanticUnavailable(
             f"index was built with {indexed_model.value!r}, config says "
-            f"{expected_model!r} — run `jobtrack reindex`"
+            f"{expected_model!r} — run `applyr reindex`"
         )
     vector = embed([query])[0]
     with engine.connect() as conn:
