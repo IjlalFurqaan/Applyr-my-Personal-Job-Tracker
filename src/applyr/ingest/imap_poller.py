@@ -10,10 +10,10 @@ from collections.abc import Mapping
 import keyring
 from sqlmodel import Session, select
 
-from jobtrack.config import Config
-from jobtrack.core.models import Email, Meta
+from applyr.config import Config
+from applyr.core.models import Email, Meta
 
-KEYRING_SERVICE = "jobtrack-imap"
+KEYRING_SERVICE = "applyr-imap"
 
 
 class IngestError(Exception):
@@ -71,10 +71,10 @@ def poll(session: Session, config: Config) -> int:
 
     user = config.email.user
     if not user:
-        raise IngestError("no email account configured — run `jobtrack email setup` first")
+        raise IngestError("no email account configured — run `applyr email setup` first")
     password = get_password(user)
     if password is None:
-        raise IngestError(f"no password in keyring for {user} — run `jobtrack email setup`")
+        raise IngestError(f"no password in keyring for {user} — run `applyr email setup`")
 
     key = _checkpoint_key(config)
     last_uid = _get_checkpoint(session, key)
