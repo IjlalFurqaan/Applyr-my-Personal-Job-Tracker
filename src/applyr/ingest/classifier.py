@@ -4,9 +4,9 @@ from __future__ import annotations
 
 from pydantic import BaseModel, Field, ValidationError
 
-from jobtrack.core.enums import EmailClass
-from jobtrack.llm.jsonutil import extract_json_object
-from jobtrack.llm.provider import ChatMessage, LLMProvider
+from applyr.core.enums import EmailClass
+from applyr.llm.jsonutil import extract_json_object
+from applyr.llm.provider import ChatMessage, LLMProvider
 
 _SYSTEM = (
     "You classify emails for a personal job-application tracker. Respond with ONLY a "
