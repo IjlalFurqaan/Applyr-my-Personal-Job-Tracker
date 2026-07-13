@@ -2,7 +2,7 @@
 
 Linking is deterministic: sender domain -> company, then thread continuity,
 then subject/title token overlap. Nothing auto-commits — high-confidence
-classifications become pending proposals in `jobtrack review`.
+classifications become pending proposals in `applyr review`.
 """
 
 from __future__ import annotations
@@ -12,24 +12,24 @@ from dataclasses import dataclass
 
 from sqlmodel import Session, select
 
-from jobtrack.config import Config
-from jobtrack.core import actions as act
-from jobtrack.core import proposals as props
-from jobtrack.core.clock import utcnow
-from jobtrack.core.enums import (
+from applyr.config import Config
+from applyr.core import actions as act
+from applyr.core import proposals as props
+from applyr.core.clock import utcnow
+from applyr.core.enums import (
     STATUS_ORDER,
     Direction,
     EmailClass,
     InteractionChannel,
     Status,
 )
-from jobtrack.core.events import derived_status
-from jobtrack.core.models import Application, Email, Job, Proposal
-from jobtrack.core.normalize import tokens
-from jobtrack.core.repos import applications as apps_repo
-from jobtrack.core.repos import companies as companies_repo
-from jobtrack.ingest.classifier import classify
-from jobtrack.llm.provider import LLMProvider
+from applyr.core.events import derived_status
+from applyr.core.models import Application, Email, Job, Proposal
+from applyr.core.normalize import tokens
+from applyr.core.repos import applications as apps_repo
+from applyr.core.repos import companies as companies_repo
+from applyr.ingest.classifier import classify
+from applyr.llm.provider import LLMProvider
 
 # Free-mail domains never identify a company.
 FREEMAIL = frozenset(
