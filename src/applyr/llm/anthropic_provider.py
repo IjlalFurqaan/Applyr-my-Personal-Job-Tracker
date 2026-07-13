@@ -6,7 +6,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from jobtrack.llm.provider import ChatMessage, ChatResponse, ProviderError, ToolCallRequest
+from applyr.llm.provider import ChatMessage, ChatResponse, ProviderError, ToolCallRequest
 
 
 class AnthropicProvider:
