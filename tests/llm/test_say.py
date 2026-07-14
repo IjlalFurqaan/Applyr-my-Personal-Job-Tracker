@@ -3,11 +3,11 @@ from __future__ import annotations
 from sqlalchemy.engine import Engine
 from sqlmodel import Session
 
-from jobtrack.config import Config
-from jobtrack.core.enums import Status
-from jobtrack.llm.provider import ToolCallRequest
-from jobtrack.llm.say import plan, run_call
-from jobtrack.llm.tools import ToolContext
+from applyr.config import Config
+from applyr.core.enums import Status
+from applyr.llm.provider import ToolCallRequest
+from applyr.llm.say import plan, run_call
+from applyr.llm.tools import ToolContext
 from tests.conftest import pipeline
 from tests.fakes import FakeProvider
 
@@ -29,7 +29,7 @@ def test_plan_emits_a_tool_call(
             )
         ]
     )
-    import jobtrack.llm.say as say_mod
+    import applyr.llm.say as say_mod
 
     def fake_provider_for(cfg: Config, task: str) -> FakeProvider:
         return provider
