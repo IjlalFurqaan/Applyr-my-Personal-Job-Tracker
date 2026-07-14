@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from jobtrack.config import Config
-from jobtrack.llm.ollama import OllamaProvider
-from jobtrack.llm.provider import LLMProvider
+from applyr.config import Config
+from applyr.llm.ollama import OllamaProvider
+from applyr.llm.provider import LLMProvider
 
 
 def local_provider(config: Config) -> OllamaProvider:
@@ -17,7 +17,7 @@ def provider_for(config: Config, task: str) -> LLMProvider:
     """task in {classify, jd_parse, prep, draft, say}; defaults to local."""
     target = config.llm.tasks.get(task, "local")
     if target == "anthropic":
-        from jobtrack.llm.anthropic_provider import AnthropicProvider
+        from applyr.llm.anthropic_provider import AnthropicProvider
 
         return AnthropicProvider(model=config.llm.anthropic_model)
     return local_provider(config)
