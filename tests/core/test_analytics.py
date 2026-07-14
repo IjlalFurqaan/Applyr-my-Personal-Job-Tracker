@@ -4,10 +4,10 @@ import datetime as dt
 
 from sqlmodel import Session
 
-from jobtrack.core import analytics
-from jobtrack.core.clock import utcnow
-from jobtrack.core.enums import Status
-from jobtrack.core.models import Document, Interaction, Interview, JobSkill, TaskItem
+from applyr.core import analytics
+from applyr.core.clock import utcnow
+from applyr.core.enums import Status
+from applyr.core.models import Document, Interaction, Interview, JobSkill, TaskItem
 from tests.conftest import add_status, make_app, make_company, make_job, pipeline
 
 
