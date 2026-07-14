@@ -8,12 +8,12 @@ import pytest
 from sqlalchemy.engine import Engine
 from sqlmodel import Session, SQLModel, create_engine
 
-import jobtrack.core.models  # noqa: F401  (populate metadata)
-from jobtrack.config import Config
-from jobtrack.core.clock import utcnow
-from jobtrack.core.enums import EventSource, Status
-from jobtrack.core.events import append_status_event
-from jobtrack.core.models import Application, Company, Job
+import applyr.core.models  # noqa: F401  (populate metadata)
+from applyr.config import Config
+from applyr.core.clock import utcnow
+from applyr.core.enums import EventSource, Status
+from applyr.core.events import append_status_event
+from applyr.core.models import Application, Company, Job
 
 
 @pytest.fixture()
