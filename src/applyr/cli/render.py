@@ -25,7 +25,7 @@ def print_candidates(result: ToolResult) -> None:
         activity = f"last activity {cand.last_activity}" if cand.last_activity else None
         extra = " · ".join(p for p in [cand.status, activity] if p)
         suffix = f"  ({extra})" if extra else ""
-        console.print(f"  {i}. {cand.label}  [{cand.ref}]{suffix}")
+        console.print(f"  {i}. {cand.label}  \\[{cand.ref}]{suffix}")
 
 
 def print_hits(data: dict[str, Any]) -> None:

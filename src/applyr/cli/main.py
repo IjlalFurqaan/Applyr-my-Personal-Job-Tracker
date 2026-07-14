@@ -348,7 +348,7 @@ def show(ref: str) -> None:
             raise typer.Exit(1)
         data = result.data or {}
         if "events" in data:  # application detail gets a proper layout
-            header = f"{data['company']} — {data['title']}  [{data['ref']}]"
+            header = f"{data['company']} — {data['title']}  \\[{data['ref']}]"
             body = [
                 f"status: [bold]{data['status']}[/bold] ({data['days_in_stage']}d in stage)",
                 f"applied: {data['applied_at'] or '-'} · source: {data['source'] or '-'}"
@@ -442,7 +442,7 @@ def review() -> None:
             assert proposal.id is not None
             action = props.load_action(proposal)
             title = (
-                f"[{i}/{len(queue)}] proposal #{proposal.id} — {action.kind} "
+                f"\\[{i}/{len(queue)}] proposal #{proposal.id} — {action.kind} "
                 f"(source: {proposal.source})"
             )
             body = props.diff_for(session, proposal)

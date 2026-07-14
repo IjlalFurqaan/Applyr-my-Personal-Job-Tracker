@@ -1,4 +1,4 @@
-# Applyr — My Personal Job Tracker
+# Applyr â€” My Personal Job Tracker
 
 A local-first, single-user job-application tracker that maintains itself.
 

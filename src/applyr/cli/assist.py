@@ -68,7 +68,7 @@ def prep(
             console.print(f"[red]{resolved.hint or 'application not resolved'}[/red]")
             if resolved.candidates:
                 for cand in resolved.candidates:
-                    console.print(f"  - {cand.label} [{cand.ref}]")
+                    console.print(f"  - {cand.label} \\[{cand.ref}]")
             raise typer.Exit(1)
         try:
             dossier = build_dossier(session, resolved.entity_id)
