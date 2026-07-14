@@ -5,7 +5,7 @@ from typing import Any
 
 import httpx
 
-from jobtrack.llm.provider import ChatMessage, ChatResponse, ProviderError, ToolCallRequest
+from applyr.llm.provider import ChatMessage, ChatResponse, ProviderError, ToolCallRequest
 
 
 class OllamaProvider:
