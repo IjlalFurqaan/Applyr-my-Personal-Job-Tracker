@@ -4,13 +4,13 @@ import datetime as dt
 
 from sqlmodel import Session
 
-from jobtrack.config import Config
-from jobtrack.core import proposals as props
-from jobtrack.core.clock import utcnow
-from jobtrack.core.enums import EmailClass, ProposalStatus, Status
-from jobtrack.core.events import derived_status
-from jobtrack.core.models import Email
-from jobtrack.ingest.linker import link_email, process_new, sender_domain
+from applyr.config import Config
+from applyr.core import proposals as props
+from applyr.core.clock import utcnow
+from applyr.core.enums import EmailClass, ProposalStatus, Status
+from applyr.core.events import derived_status
+from applyr.core.models import Email
+from applyr.ingest.linker import link_email, process_new, sender_domain
 from tests.conftest import add_status, make_app, make_company, make_job, pipeline
 from tests.fakes import FakeProvider
 
