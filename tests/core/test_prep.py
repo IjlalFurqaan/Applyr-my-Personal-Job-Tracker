@@ -5,11 +5,11 @@ import json
 
 from sqlmodel import Session
 
-from jobtrack.core.clock import utcnow
-from jobtrack.core.enums import Status
-from jobtrack.core.events import append_note_event
-from jobtrack.core.models import Document, Interview
-from jobtrack.core.prep import build_dossier, question_bank
+from applyr.core.clock import utcnow
+from applyr.core.enums import Status
+from applyr.core.events import append_note_event
+from applyr.core.models import Document, Interview
+from applyr.core.prep import build_dossier, question_bank
 from tests.conftest import make_app, make_company, make_job, pipeline
 
 
