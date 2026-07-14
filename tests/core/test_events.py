@@ -4,9 +4,9 @@ import datetime as dt
 
 from sqlmodel import Session
 
-from jobtrack.core.clock import utcnow
-from jobtrack.core.enums import Status
-from jobtrack.core.events import (
+from applyr.core.clock import utcnow
+from applyr.core.enums import Status
+from applyr.core.events import (
     append_note_event,
     append_status_event,
     days_in_stage,
@@ -14,7 +14,7 @@ from jobtrack.core.events import (
     first_reached,
     last_activity,
 )
-from jobtrack.core.models import Interaction
+from applyr.core.models import Interaction
 from tests.conftest import add_status, pipeline
 
 
