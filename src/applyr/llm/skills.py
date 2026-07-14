@@ -6,10 +6,10 @@ from __future__ import annotations
 from pydantic import BaseModel, ValidationError
 from sqlmodel import Session, select
 
-from jobtrack.core.models import Job, JobSkill
-from jobtrack.core.repos import applications as apps_repo
-from jobtrack.llm.jsonutil import extract_json_array
-from jobtrack.llm.provider import ChatMessage, LLMProvider
+from applyr.core.models import Job, JobSkill
+from applyr.core.repos import applications as apps_repo
+from applyr.llm.jsonutil import extract_json_array
+from applyr.llm.provider import ChatMessage, LLMProvider
 
 _SYSTEM = (
     "Extract the skills, technologies, tools and methodologies REQUIRED or requested "
