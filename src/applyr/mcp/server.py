@@ -1,7 +1,7 @@
 """FastMCP server exposing the tool registry to Claude Code / Claude Desktop.
 
 Wrappers are thin and explicit: each mirrors its params model in
-jobtrack.llm.tools (a contract test keeps them in sync) and funnels into
+applyr.llm.tools (a contract test keeps them in sync) and funnels into
 dispatch(). Confirmation over MCP is conversational: write tools return a
 pending proposal + diff; the client shows it and then calls confirm_proposal.
 """
@@ -12,12 +12,12 @@ from typing import Any
 
 from fastmcp import FastMCP
 
-from jobtrack.config import Config, ensure_home, load_config
-from jobtrack.core.db import init_db, session_scope
-from jobtrack.llm.tools import ToolContext, dispatch
+from applyr.config import Config, ensure_home, load_config
+from applyr.core.db import init_db, session_scope
+from applyr.llm.tools import ToolContext, dispatch
 
 mcp: FastMCP = FastMCP(
-    "jobtrack",
+    "applyr",
     instructions=(
         "Personal job-application tracker. Writes create pending proposals — "
         "always show the returned diff to the user and only call confirm_proposal "
