@@ -17,10 +17,10 @@ from typing import Literal
 from rapidfuzz import fuzz
 from sqlmodel import Session, select
 
-from jobtrack.core.clock import utcnow
-from jobtrack.core.enums import TERMINAL_STATUSES
-from jobtrack.core.events import derived_status, last_activity
-from jobtrack.core.models import (
+from applyr.core.clock import utcnow
+from applyr.core.enums import TERMINAL_STATUSES
+from applyr.core.events import derived_status, last_activity
+from applyr.core.models import (
     Application,
     Company,
     CompanyAlias,
@@ -29,9 +29,9 @@ from jobtrack.core.models import (
     Interview,
     Job,
 )
-from jobtrack.core.normalize import content_tokens, normalize_company, tokens
-from jobtrack.core.repos import applications as apps_repo
-from jobtrack.core.repos import companies as companies_repo
+from applyr.core.normalize import content_tokens, normalize_company, tokens
+from applyr.core.repos import applications as apps_repo
+from applyr.core.repos import companies as companies_repo
 
 AUTO_THRESHOLD = 92.0
 CANDIDATE_THRESHOLD = 70.0
