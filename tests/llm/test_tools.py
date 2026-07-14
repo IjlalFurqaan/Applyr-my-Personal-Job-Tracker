@@ -6,11 +6,11 @@ from typing import Any
 from sqlalchemy.engine import Engine
 from sqlmodel import Session, select
 
-from jobtrack.config import Config
-from jobtrack.core.enums import Status
-from jobtrack.core.events import derived_status
-from jobtrack.core.models import Company
-from jobtrack.llm.tools import TOOLS, ToolContext, dispatch, tool_schemas
+from applyr.config import Config
+from applyr.core.enums import Status
+from applyr.core.events import derived_status
+from applyr.core.models import Company
+from applyr.llm.tools import TOOLS, ToolContext, dispatch, tool_schemas
 from tests.conftest import add_status, make_app, make_company, make_job, pipeline
 
 
@@ -131,7 +131,7 @@ def test_tool_schemas_are_well_formed() -> None:
 
 def test_mcp_wrappers_mirror_param_models() -> None:
     """The MCP server's explicit wrappers must not drift from the registry."""
-    from jobtrack.mcp import server
+    from applyr.mcp import server
 
     for name, spec in TOOLS.items():
         tool_obj: Any = getattr(server, name)
