@@ -4,9 +4,9 @@ from __future__ import annotations
 
 from sqlmodel import Session
 
-from jobtrack.core.enums import Status
-from jobtrack.core.models import CompanyAlias, Contact
-from jobtrack.llm.resolution import (
+from applyr.core.enums import Status
+from applyr.core.models import CompanyAlias, Contact
+from applyr.llm.resolution import (
     resolve_application,
     resolve_company,
     resolve_contact,
