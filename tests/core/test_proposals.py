@@ -5,13 +5,13 @@ from pathlib import Path
 import pytest
 from sqlmodel import Session, select
 
-from jobtrack.core import actions as act
-from jobtrack.core import proposals as props
-from jobtrack.core.actions import is_auto_approvable
-from jobtrack.core.enums import ProposalStatus, Status
-from jobtrack.core.events import derived_status
-from jobtrack.core.models import Application, Company, Document, Job
-from jobtrack.core.proposals import ProposalError
+from applyr.core import actions as act
+from applyr.core import proposals as props
+from applyr.core.actions import is_auto_approvable
+from applyr.core.enums import ProposalStatus, Status
+from applyr.core.events import derived_status
+from applyr.core.models import Application, Company, Document, Job
+from applyr.core.proposals import ProposalError
 from tests.conftest import pipeline
 
 
