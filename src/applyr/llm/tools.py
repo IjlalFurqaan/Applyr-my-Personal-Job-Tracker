@@ -1,6 +1,6 @@
 """Tool registry: the one place tool schemas live.
 
-The MCP server exposes these to Claude; `jobtrack say` passes the same schemas
+The MCP server exposes these to Claude; `applyr say` passes the same schemas
 to the local model. Handlers resolve refs deterministically, then either create
 a pending Proposal (writes), return data (reads), or return a disambiguation
 request with candidates — never a guess.
@@ -19,14 +19,14 @@ from pydantic import BaseModel, Field, ValidationError
 from sqlalchemy.engine import Engine
 from sqlmodel import Session, select
 
-from jobtrack.config import Config
-from jobtrack.core import actions as act
-from jobtrack.core import analytics
-from jobtrack.core import proposals as props
-from jobtrack.core.actions import is_auto_approvable
-from jobtrack.core.clock import utcnow
-from jobtrack.core.db import vec_available
-from jobtrack.core.enums import (
+from applyr.config import Config
+from applyr.core import actions as act
+from applyr.core import analytics
+from applyr.core import proposals as props
+from applyr.core.actions import is_auto_approvable
+from applyr.core.clock import utcnow
+from applyr.core.db import vec_available
+from applyr.core.enums import (
     Direction,
     DocumentType,
     InteractionChannel,
@@ -36,8 +36,8 @@ from jobtrack.core.enums import (
     Status,
     TaskKind,
 )
-from jobtrack.core.events import days_in_stage, derived_status, last_activity, notes_for
-from jobtrack.core.models import (
+from applyr.core.events import days_in_stage, derived_status, last_activity, notes_for
+from applyr.core.models import (
     Application,
     ApplicationEvent,
     Company,
@@ -48,16 +48,16 @@ from jobtrack.core.models import (
     Job,
     Proposal,
 )
-from jobtrack.core.repos import applications as apps_repo
-from jobtrack.core.repos import documents as documents_repo
-from jobtrack.core.search import (
+from applyr.core.repos import applications as apps_repo
+from applyr.core.repos import documents as documents_repo
+from applyr.core.search import (
     SemanticUnavailable,
     fuzzy_search,
     semantic_search,
 )
-from jobtrack.ingest.jd_capture import CaptureError, capture_text, capture_url
-from jobtrack.llm import resolution as res
-from jobtrack.llm.provider import ProviderError
+from applyr.ingest.jd_capture import CaptureError, capture_text, capture_url
+from applyr.llm import resolution as res
+from applyr.llm.provider import ProviderError
 
 # --- envelope ---------------------------------------------------------------
 
@@ -365,7 +365,7 @@ def _resolve_document_param(
         None,
         _error(
             f"no document labelled {text!r} and no file at that path — "
-            "register one with add_document/`jobtrack add doc` or pass a valid path"
+            "register one with add_document/`applyr add doc` or pass a valid path"
         ),
     )
 
@@ -561,7 +561,7 @@ def _handle_search(ctx: ToolContext, p: SearchParams) -> ToolResult:
     semantic_note: str | None = None
     if vec_available(ctx.engine):
         try:
-            from jobtrack.llm.router import local_provider
+            from applyr.llm.router import local_provider
 
             provider = local_provider(ctx.config)
             sem = semantic_search(
@@ -758,8 +758,8 @@ def _handle_draft_followup(ctx: ToolContext, p: DraftFollowupParams) -> ToolResu
     draft = _FOLLOWUP_TEMPLATES[p.kind].format(**context)
     context_json = json.dumps({k: str(v) for k, v in context.items()})
     try:
-        from jobtrack.llm.provider import ChatMessage
-        from jobtrack.llm.router import provider_for
+        from applyr.llm.provider import ChatMessage
+        from applyr.llm.router import provider_for
 
         provider = provider_for(ctx.config, "draft")
         polished = provider.chat(
@@ -785,7 +785,7 @@ def _handle_draft_followup(ctx: ToolContext, p: DraftFollowupParams) -> ToolResu
     return ToolResult(
         result="ok",
         data={"draft": draft, "application": detail["ref"], "kind": p.kind},
-        message="draft only — jobtrack never sends email",
+        message="draft only — applyr never sends email",
     )
 
 
@@ -814,7 +814,7 @@ def _handle_list_proposals(ctx: ToolContext, p: ListProposalsParams) -> ToolResu
 
 
 def _handle_confirm_proposal(ctx: ToolContext, p: ConfirmProposalParams) -> ToolResult:
-    from jobtrack.core.proposals import CommitError, ProposalError
+    from applyr.core.proposals import CommitError, ProposalError
 
     try:
         result = props.confirm(ctx.session, p.proposal_id)
@@ -829,7 +829,7 @@ def _handle_confirm_proposal(ctx: ToolContext, p: ConfirmProposalParams) -> Tool
 
 
 def _handle_reject_proposal(ctx: ToolContext, p: RejectProposalParams) -> ToolResult:
-    from jobtrack.core.proposals import ProposalError
+    from applyr.core.proposals import ProposalError
 
     try:
         props.reject(ctx.session, p.proposal_id, p.reason)
