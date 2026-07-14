@@ -3,7 +3,7 @@ from __future__ import annotations
 import hashlib
 from typing import Any
 
-from jobtrack.llm.provider import ChatMessage, ChatResponse, ToolCallRequest
+from applyr.llm.provider import ChatMessage, ChatResponse, ToolCallRequest
 
 
 class FakeProvider:
