@@ -1,4 +1,4 @@
-"""`jobtrack say "..."` — natural language in, one tool call out.
+"""`applyr say "..."` — natural language in, one tool call out.
 
 The local model only picks a tool and fills arguments; resolution, validation,
 diffing and confirmation all happen in deterministic code afterwards.
@@ -6,10 +6,10 @@ diffing and confirmation all happen in deterministic code afterwards.
 
 from __future__ import annotations
 
-from jobtrack.core.clock import utcnow
-from jobtrack.llm.provider import ChatMessage, ChatResponse, ToolCallRequest
-from jobtrack.llm.router import provider_for
-from jobtrack.llm.tools import ToolContext, ToolResult, dispatch, tool_schemas
+from applyr.core.clock import utcnow
+from applyr.llm.provider import ChatMessage, ChatResponse, ToolCallRequest
+from applyr.llm.router import provider_for
+from applyr.llm.tools import ToolContext, ToolResult, dispatch, tool_schemas
 
 
 def _system_prompt() -> str:
