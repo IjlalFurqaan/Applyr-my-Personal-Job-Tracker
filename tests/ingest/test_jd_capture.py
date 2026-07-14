@@ -5,8 +5,8 @@ from typing import Any
 
 import pytest
 
-from jobtrack.ingest import jd_capture
-from jobtrack.ingest.jd_capture import CaptureError, capture_text, capture_url
+from applyr.ingest import jd_capture
+from applyr.ingest.jd_capture import CaptureError, capture_text, capture_url
 
 
 def test_capture_text_hashes_and_snapshots(tmp_path: Path) -> None:
