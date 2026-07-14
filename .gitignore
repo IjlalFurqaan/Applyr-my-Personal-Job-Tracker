@@ -7,3 +7,7 @@ __pycache__/
 .ruff_cache/
 dist/
 *.egg-info/
+
+# local data
+*.db
+.autogen-scratch.db
