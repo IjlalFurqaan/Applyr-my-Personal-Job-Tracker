@@ -4,7 +4,7 @@ from alembic import context
 from sqlalchemy import engine_from_config, pool
 from sqlmodel import SQLModel
 
-import jobtrack.core.models  # noqa: F401  (populates SQLModel.metadata)
+import applyr.core.models  # noqa: F401  (populates SQLModel.metadata)
 
 config = context.config
 
