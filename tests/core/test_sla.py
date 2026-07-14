@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from sqlmodel import Session
 
-from jobtrack.core.clock import utcnow
-from jobtrack.core.enums import Status
-from jobtrack.core.events import append_note_event
-from jobtrack.core.sla import is_ghosted, is_stale
+from applyr.core.clock import utcnow
+from applyr.core.enums import Status
+from applyr.core.events import append_note_event
+from applyr.core.sla import is_ghosted, is_stale
 from tests.conftest import pipeline
 
 SLA = {"applied": 14, "screening": 10, "interviewing": 10}
