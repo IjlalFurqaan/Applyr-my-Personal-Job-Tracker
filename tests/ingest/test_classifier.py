@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from jobtrack.core.enums import EmailClass
-from jobtrack.ingest.classifier import classify
+from applyr.core.enums import EmailClass
+from applyr.ingest.classifier import classify
 from tests.fakes import FakeProvider
 
 
