@@ -111,11 +111,51 @@
   .funnel-row { display: grid; grid-template-columns: 110px 1fr 120px; gap: 12px; align-items: center; padding: 5px 0; }
   .funnel-bar { background: #ededec; border-radius: 3px; height: 6px; overflow: hidden; }
   .funnel-bar > div { background: var(--accent); height: 100%; border-radius: 3px; min-width: 2px; }
+  /* --- pipeline stage bar --- */
+  .stagebar { display: flex; gap: 2px; margin-bottom: 14px; }
+  .stage {
+    flex: 1; text-align: center; padding: 12px 4px 10px; cursor: pointer;
+    background: #f7f7f5; color: var(--dim); border: none; border-radius: 0;
+    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 50%, calc(100% - 12px) 100%, 0 100%, 12px 50%);
+    font-family: inherit;
+  }
+  .stage:first-child { clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 50%, calc(100% - 12px) 100%, 0 100%); border-radius: 6px 0 0 6px; }
+  .stage:last-child { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 12px 50%); border-radius: 0 6px 6px 0; }
+  .stage:hover { background: #f1f1ef; }
+  .stage.active { background: #fdecc8; color: var(--text); }
+  .stage .n { display: block; font-size: 18px; font-weight: 600; color: var(--text); line-height: 1.2; }
+  .stage.dimmed .n { color: #b3b2ae; }
+  .stage .l { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: .7px; font-weight: 600; }
+  /* --- stars --- */
+  .stars { color: #d9d9d6; font-size: 13px; letter-spacing: 1px; white-space: nowrap; }
+  .stars .on { color: var(--amber); }
+  /* --- modal --- */
+  .modal-backdrop {
+    position: fixed; inset: 0; background: rgba(15,15,15,.45); z-index: 10;
+    display: flex; align-items: flex-start; justify-content: center; padding: 48px 16px;
+  }
+  .modal {
+    background: #fff; border-radius: 10px; box-shadow: 0 16px 48px rgba(15,15,15,.25);
+    width: 560px; max-width: 100%; max-height: 85vh; overflow-y: auto; padding: 20px 24px;
+  }
+  .modal h2 { margin: 0 0 14px; }
+  .frm { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 12px; }
+  .frm .wide { grid-column: 1 / -1; }
+  .frm label { display: block; font-size: 12px; color: var(--dim); margin-bottom: 3px; }
+  .frm input, .frm select, .frm textarea {
+    width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text);
+    border-radius: 6px; padding: 6px 9px; font-size: 13px; font-family: inherit; outline: none;
+  }
+  .frm input:focus, .frm select:focus, .frm textarea:focus {
+    border-color: var(--accent); box-shadow: 0 0 0 2px rgba(35,131,226,.15);
+  }
+  .frm textarea { min-height: 70px; resize: vertical; font-family: var(--mono); font-size: 12px; }
+  .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
   #toast {
     position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
     background: #0f0f0f; color: #fff; border-radius: 6px; font-size: 13px;
     padding: 9px 16px; opacity: 0; transition: opacity .25s; pointer-events: none;
-    max-width: 80vw; box-shadow: 0 4px 12px rgba(15,15,15,.2);
+    max-width: 80vw; box-shadow: 0 4px 12px rgba(15,15,15,.2); z-index: 20;
   }
   #toast.show { opacity: 1; }
   .controls { display: flex; gap: 14px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
@@ -346,54 +386,192 @@ async function viewDashboard() {
   }
 }
 
+// Teal-style pipeline segments over Applyr's derived statuses.
+const SEGMENTS = [
+  { label: "Saved",        statuses: ["saved"] },
+  { label: "Applying",     statuses: ["applying"] },
+  { label: "Applied",      statuses: ["applied"] },
+  { label: "Screening",    statuses: ["screening", "assessment"] },
+  { label: "Interviewing", statuses: ["interviewing", "final_round"] },
+  { label: "Offer",        statuses: ["offer", "accepted"] },
+  { label: "Closed",       statuses: ["rejected", "withdrawn"] },
+];
+
+function salaryText(r) {
+  const f = (n) => n.toLocaleString();
+  if (r.comp_min && r.comp_max) return `${f(r.comp_min)}–${f(r.comp_max)} ${r.currency || ""}`.trim();
+  if (r.comp_min || r.comp_max) return `${f(r.comp_min || r.comp_max)} ${r.currency || ""}`.trim();
+  return "-";
+}
+
+function starsEl(priority) {
+  // priority 1 (high) .. 3 (low) → 3..1 stars
+  const span = el("span", "stars");
+  if (!priority) { span.textContent = "—"; return span; }
+  const on = Math.max(1, 4 - priority);
+  for (let i = 0; i < 3; i++) span.appendChild(el("span", i < on ? "on" : null, "★"));
+  return span;
+}
+
+function openModal(title) {
+  const backdrop = el("div", "modal-backdrop");
+  const modal = el("div", "modal");
+  modal.appendChild(el("h2", null, title));
+  const body = el("div");
+  modal.appendChild(body);
+  backdrop.appendChild(modal);
+  backdrop.onclick = (e) => { if (e.target === backdrop) backdrop.remove(); };
+  document.body.appendChild(backdrop);
+  return { body, close: () => backdrop.remove() };
+}
+
+function addJobModal(onDone) {
+  const { body, close } = openModal("Add job");
+  const form = el("form");
+  const grid = el("div", "frm");
+  const fields = {};
+  const add = (key, label, kind, wide, options) => {
+    const wrap = el("div", wide ? "wide" : null);
+    wrap.appendChild(el("label", null, label));
+    let input;
+    if (kind === "select") {
+      input = el("select");
+      for (const o of options) input.appendChild(new Option(o || "—", o));
+    } else if (kind === "textarea") {
+      input = el("textarea");
+    } else {
+      input = el("input");
+      input.type = kind;
+    }
+    wrap.appendChild(input);
+    grid.appendChild(wrap);
+    fields[key] = input;
+  };
+  add("company", "Company *", "text");
+  add("title", "Job position *", "text");
+  add("location", "Location", "text");
+  add("remote_policy", "Remote policy", "select", false, ["", "onsite", "hybrid", "remote"]);
+  add("comp_min", "Salary min", "number");
+  add("comp_max", "Salary max", "number");
+  add("currency", "Currency (e.g. EUR)", "text");
+  add("posted_at", "Posted on", "date");
+  add("source", "Found via", "select", false, ["", "linkedin", "company_site", "aggregator", "other"]);
+  add("url", "Posting URL", "text");
+  add("jd_text", "Job description (paste — archived immutably)", "textarea", true);
+  form.appendChild(grid);
+  const actions = el("div", "modal-actions");
+  const cancel = el("button", null, "Cancel");
+  cancel.type = "button";
+  cancel.onclick = close;
+  const submit = el("button", "primary", "Add job");
+  submit.type = "submit";
+  actions.append(cancel, submit);
+  form.appendChild(actions);
+  const out = el("div");
+  body.append(form, out);
+
+  form.onsubmit = async (e) => {
+    e.preventDefault();
+    const v = (k) => fields[k].value.trim();
+    if (!v("company") || !v("title")) { toast("company and job position are required"); return; }
+    const args = {
+      company: v("company"), title: v("title"),
+      location: v("location") || null, remote_policy: v("remote_policy") || null,
+      comp_min: v("comp_min") ? Number(v("comp_min")) : null,
+      comp_max: v("comp_max") ? Number(v("comp_max")) : null,
+      currency: v("currency") || null, posted_at: v("posted_at") || null,
+      source: v("source") || null, url: v("url") || null,
+      jd_text: v("jd_text") || null,
+    };
+    const res = await dispatch("add_job", args);
+    // the proposal card's Confirm/Reject render inside the modal; close on commit
+    renderResult(res, out, { name: "add_job", args });
+    if (res.result === "proposal_created") {
+      form.style.display = "none";
+      const origRoute = out.querySelector("button.primary");
+      if (origRoute) {
+        const prev = origRoute.onclick;
+        origRoute.onclick = async () => { await prev(); close(); if (onDone) onDone(); };
+      }
+      const rej = out.querySelector("button.danger");
+      if (rej) {
+        const prevR = rej.onclick;
+        rej.onclick = async () => { await prevR(); close(); };
+      }
+    }
+  };
+}
+
 async function viewApplications() {
   $view.replaceChildren();
+  const stagebar = el("div", "stagebar");
   const controls = el("div", "controls");
-  const sel = el("select");
-  sel.appendChild(new Option("all statuses", ""));
-  for (const s of STATUSES) sel.appendChild(new Option(s, s));
+  const tblBox = el("div");
+  const detail = el("div");
+  let activeSeg = null;
+
   const lbl = el("label");
   const chk = el("input");
   chk.type = "checkbox";
   lbl.append(chk, " include archived");
-  controls.append(sel, lbl);
-  $view.appendChild(controls);
-  const tblBox = el("div");
-  const detail = el("div");
-  $view.append(tblBox, detail);
+  const spacer = el("span");
+  spacer.style.flex = "1";
+  const addBtn = el("button", "primary", "+ Add job");
+  addBtn.onclick = () => addJobModal(load);
+  controls.append(lbl, spacer, addBtn);
+  $view.append(stagebar, controls, tblBox, detail);
 
   async function load() {
     const rows = await apiGet("/api/applications" + (chk.checked ? "?archived=1" : ""));
-    const filtered = sel.value ? rows.filter(r => r.status === sel.value) : rows;
+
+    stagebar.replaceChildren();
+    for (const seg of SEGMENTS) {
+      const count = rows.filter(r => seg.statuses.includes(r.status)).length;
+      const b = el("button", "stage" + (activeSeg === seg.label ? " active" : "") + (count ? "" : " dimmed"));
+      b.type = "button";
+      b.appendChild(el("span", "n", count));
+      b.appendChild(el("span", "l", seg.label));
+      b.onclick = () => { activeSeg = activeSeg === seg.label ? null : seg.label; load(); };
+      stagebar.appendChild(b);
+    }
+
+    const seg = SEGMENTS.find(s => s.label === activeSeg);
+    const filtered = seg ? rows.filter(r => seg.statuses.includes(r.status)) : rows;
     tblBox.replaceChildren();
     if (!filtered.length) {
-      tblBox.appendChild(el("div", "card empty", "no applications" + (sel.value ? ` with status ${sel.value}` : "") +
-        ' — capture one with the box above, e.g. "applied to the Stripe backend role"'));
+      tblBox.appendChild(el("div", "card empty", "no applications here yet — use “+ Add job” or the box above," +
+        ' e.g. "applied to the Stripe backend role"'));
       return;
     }
     const table = el("table");
     const thead = el("thead");
     const hr = el("tr");
-    for (const h of ["Ref", "Application", "Status", "In stage", "Quiet", "Source"]) hr.appendChild(el("th", null, h));
+    for (const h of ["Job position", "Company", "Status", "Salary", "Location", "Saved", "Applied", "Source", "Excitement"])
+      hr.appendChild(el("th", null, h));
     thead.appendChild(hr);
     table.appendChild(thead);
     const tbody = el("tbody");
     for (const r of filtered) {
       const tr = el("tr", "rowlink");
-      tr.appendChild(el("td", null, r.ref));
-      const tdApp = el("td", null, r.label);
-      if (r.ghosted) tdApp.appendChild(el("span", "flag ghosted", "ghosted"));
-      else if (r.stale) tdApp.appendChild(el("span", "flag stale", "stale"));
-      if (r.archived) tdApp.appendChild(el("span", "flag archived", "archived"));
-      tr.appendChild(tdApp);
+      const tdPos = el("td", null, r.title || "-");
+      if (r.ghosted) tdPos.appendChild(el("span", "flag ghosted", "ghosted"));
+      else if (r.stale) tdPos.appendChild(el("span", "flag stale", "stale"));
+      if (r.archived) tdPos.appendChild(el("span", "flag archived", "archived"));
+      tr.appendChild(tdPos);
+      tr.appendChild(el("td", null, r.company || "-"));
       const tdS = el("td");
       const chip = el("span", "chip", r.status || "-");
       chip.dataset.s = r.status || "";
       tdS.appendChild(chip);
       tr.appendChild(tdS);
-      tr.appendChild(el("td", null, r.days_in_stage !== null ? r.days_in_stage + "d" : "-"));
-      tr.appendChild(el("td", null, r.days_quiet !== null ? r.days_quiet + "d" : "-"));
+      tr.appendChild(el("td", null, salaryText(r)));
+      tr.appendChild(el("td", null, r.location || (r.remote_policy === "remote" ? "Remote" : "-")));
+      tr.appendChild(el("td", null, r.saved_at || "-"));
+      tr.appendChild(el("td", null, r.applied_at || "-"));
       tr.appendChild(el("td", null, r.source || "-"));
+      const tdStars = el("td");
+      tdStars.appendChild(starsEl(r.priority));
+      tr.appendChild(tdStars);
       tr.onclick = () => showDetail(r.ref);
       tbody.appendChild(tr);
     }
@@ -419,6 +597,26 @@ async function viewApplications() {
     card.appendChild(el("div", "meta",
       `applied: ${d.applied_at || "-"} · source: ${d.source || "-"} · resume: ${d.resume || "-"}` +
       ` · JD archived: ${d.jd_archived ? "yes" : "no"} · linked emails: ${d.linked_emails ?? 0}`));
+
+    // move-to-status control: proposes, never writes directly
+    const mover = el("div", "controls");
+    mover.style.margin = "10px 0 0";
+    const moveSel = el("select");
+    moveSel.appendChild(new Option("move to…", ""));
+    for (const s of STATUSES) if (s !== d.status) moveSel.appendChild(new Option(s, s));
+    const noteIn = el("input");
+    noteIn.placeholder = "note (optional)";
+    noteIn.style.cssText = "flex:1;border:1px solid var(--border);border-radius:6px;padding:5px 9px;font-size:13px;font-family:inherit;outline:none";
+    const moveBtn = el("button", null, "Propose change");
+    const moveOut = el("div");
+    moveBtn.onclick = async () => {
+      if (!moveSel.value) return;
+      const args = { application: d.ref, to_status: moveSel.value, note: noteIn.value.trim() || null };
+      renderResult(await dispatch("update_status", args), moveOut, { name: "update_status", args });
+    };
+    mover.append(moveSel, noteIn, moveBtn);
+    card.appendChild(mover);
+    card.appendChild(moveOut);
     if ((d.events || []).length) {
       const table = el("table");
       const hr = el("tr");
@@ -454,7 +652,6 @@ async function viewApplications() {
     card.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }
 
-  sel.onchange = load;
   chk.onchange = load;
   await load();
 }

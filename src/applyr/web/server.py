@@ -26,7 +26,7 @@ from applyr.config import Config
 from applyr.core import analytics
 from applyr.core.db import session_scope
 from applyr.core.events import days_in_stage, derived_status
-from applyr.core.models import Application
+from applyr.core.models import Application, Company, Job
 from applyr.core.repos import applications as apps_repo
 from applyr.core.sla import days_since_activity, is_ghosted, is_stale
 from applyr.llm import say
@@ -48,15 +48,29 @@ def _application_rows(
     rows: list[dict[str, Any]] = []
     for application in apps:
         assert application.id is not None
+        job = session.get(Job, application.job_id)
+        company = session.get(Company, job.company_id) if job else None
         status = derived_status(session, application.id)
         rows.append(
             {
                 "ref": f"app#{application.id}",
-                "label": apps_repo.label(session, application).rsplit(" (", 1)[0],
+                "company": company.name if company else None,
+                "title": job.title if job else None,
                 "status": status.value if status else None,
                 "days_in_stage": days_in_stage(session, application.id),
                 "days_quiet": days_since_activity(session, application.id),
                 "source": application.source,
+                "priority": application.priority,
+                "location": job.location if job else None,
+                "remote_policy": job.remote_policy if job else None,
+                "comp_min": job.comp_min if job else None,
+                "comp_max": job.comp_max if job else None,
+                "currency": job.currency if job else None,
+                "url": job.url if job else None,
+                "saved_at": job.captured_at.date().isoformat() if job else None,
+                "applied_at": (
+                    application.applied_at.isoformat() if application.applied_at else None
+                ),
                 "stale": is_stale(session, application.id, config.sla_days),
                 "ghosted": is_ghosted(session, application.id, config.sla_days),
                 "archived": application.archived,

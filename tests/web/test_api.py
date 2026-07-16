@@ -57,7 +57,10 @@ def test_applications_lists_seeded(client: TestClient, engine: Engine) -> None:
     row = rows[0]
     assert row["ref"] == "app#1"
     assert row["status"] == "screening"
-    assert "Stripe" in row["label"]
+    assert row["company"] == "Stripe"
+    assert row["title"] == "Backend Engineer"
+    # tracker-table fields are always present, even when unset
+    assert {"comp_min", "comp_max", "location", "saved_at", "applied_at", "priority"} <= row.keys()
 
 
 def test_overview_shape(client: TestClient, engine: Engine) -> None:

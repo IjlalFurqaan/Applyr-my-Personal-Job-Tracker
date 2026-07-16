@@ -143,12 +143,17 @@ uv run applyr debrief app#3    # record how it went + the questions asked (feeds
 uv run applyr ui               # serves http://127.0.0.1:8765 and opens the browser
 ```
 
-A single-page app over the exact same tool registry as the CLI and MCP —
-dashboard (brief + funnel), application list with timelines, a natural-language
-capture box, and a **Review** queue where pending proposals show their diff and
-commit only when you press Confirm. Localhost only, self-contained (no CDN, no
-build step, works offline); the propose→confirm rule holds in the browser the
-same as everywhere else.
+A single-page tracker over the exact same tool registry as the CLI and MCP.
+The Applications view is the main surface: a pipeline bar (Saved → Applying →
+Applied → Screening → Interviewing → Offer → Closed) with live counts that
+filter the table below — job position, company, status, salary, location,
+dates, source, excitement — plus **“+ Add job”** for manual entry and a
+natural-language box for AI capture. There's also a dashboard (brief + funnel),
+per-application timelines with a move-to-status control, and a **Review** queue.
+
+Every write — typed into the form, said in plain English, or proposed by email
+ingestion — becomes a pending proposal whose diff you see before pressing
+Confirm. Localhost only, self-contained (no CDN, no build step, works offline).
 
 ### Drive it from Claude (MCP)
 
