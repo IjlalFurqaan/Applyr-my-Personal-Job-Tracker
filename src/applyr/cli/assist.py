@@ -56,6 +56,27 @@ def mcp_serve() -> None:
     serve()
 
 
+def ui(
+    port: int = typer.Option(8765, help="Port on localhost"),
+    open_browser: bool = typer.Option(True, "--open/--no-open", help="Open the browser"),
+) -> None:
+    """Serve the local web UI (localhost only; writes still go propose→confirm)."""
+    import threading
+    import webbrowser
+
+    import uvicorn
+
+    from applyr.web.server import create_app
+
+    state = get_state()
+    web_app = create_app(state.config, state.engine)
+    url = f"http://127.0.0.1:{port}"
+    console.print(f"applyr ui → [bold]{url}[/bold]  (Ctrl+C to stop)")
+    if open_browser:
+        threading.Timer(0.8, webbrowser.open, args=(url,)).start()
+    uvicorn.run(web_app, host="127.0.0.1", port=port, log_level="warning")
+
+
 def prep(
     application: str,
     llm: bool = typer.Option(True, "--llm/--no-llm", help="Append LLM talking points"),

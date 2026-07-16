@@ -137,6 +137,19 @@ uv run applyr prep app#3       # one-page dossier: JD + résumé sent + notes + 
 uv run applyr debrief app#3    # record how it went + the questions asked (feeds `questions`)
 ```
 
+### Web UI
+
+```bash
+uv run applyr ui               # serves http://127.0.0.1:8765 and opens the browser
+```
+
+A single-page app over the exact same tool registry as the CLI and MCP —
+dashboard (brief + funnel), application list with timelines, a natural-language
+capture box, and a **Review** queue where pending proposals show their diff and
+commit only when you press Confirm. Localhost only, self-contained (no CDN, no
+build step, works offline); the propose→confirm rule holds in the browser the
+same as everywhere else.
+
 ### Drive it from Claude (MCP)
 
 ```bash
@@ -149,7 +162,7 @@ Register with Claude Desktop / Claude Code (adjust the path):
 {
   "mcpServers": {
     "applyr": { "command": "uv", "args": ["run", "applyr", "mcp"],
-                  "cwd": "C:/Projects/applyr" }
+                  "cwd": "C:/Projects/Applyr-my-Personal-Job-Tracker" }
   }
 }
 ```
@@ -178,17 +191,18 @@ core/    models, event sourcing, derived status, proposals, analytics, prep  (no
 llm/     provider abstraction (Ollama|Anthropic), the tool registry, entity resolution
 ingest/  JD capture, IMAP poller, classifier, linker
 mcp/     FastMCP server (thin wrappers over the tool registry)
+web/     Starlette app + single-file SPA (thin wrappers over the same registry)
 cli/     Typer commands
 ```
 
-`llm/tools.py` is the single source of truth for tool schemas — the MCP server and
-the local `say` model consume the same registry, so there is one contract and one
-test suite for both front doors.
+`llm/tools.py` is the single source of truth for tool schemas — the MCP server,
+the web UI, and the local `say` model consume the same registry, so there is one
+contract and one test suite for every front door.
 
 ## Development
 
 ```bash
-uv run pytest          # 86 tests
+uv run pytest          # 99 tests
 uv run ruff check .
 uv run mypy            # --strict, configured in pyproject.toml
 ```
@@ -200,6 +214,7 @@ still works and semantic search tells you why it's skipped.
 
 ## Non-goals
 
-No LinkedIn/Indeed scraper (paste the JD or point at a URL). No web UI. No auth,
-no Docker, no multi-tenancy. No "ATS keyword score" — résumé/JD matching is framed
+No LinkedIn/Indeed scraper (paste the JD or point at a URL). No auth, no Docker,
+no multi-tenancy, no cloud — the web UI is a localhost-only page over the same
+pipeline, not a hosted app. No "ATS keyword score" — résumé/JD matching is framed
 honestly as missing evidence, not a number to game.
